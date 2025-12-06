@@ -1,0 +1,64 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+const planes = [
+  { marca: "Fiat", precio: "$464.496", modelo: "Cronos", version: "DRIVE 1.3L MT5 PACK PLUS", financiamiento: "Plan 90% financiado en 84 cuotas", img: "/images/fiat-cronos.svg" },
+  { marca: "Fiat", precio: "$304.162", modelo: "Mobi", version: "1,0 EASY PACK TOP", financiamiento: "Plan 80% financiado en 84 cuotas", img: "/images/fiat-mobi.svg" },
+  { marca: "Fiat", precio: "$375.209", modelo: "Strada", version: "ENDURANCE CD 1.4", financiamiento: "Plan 70% financiado en 84 cuotas", img: "/images/fiat-strada.svg" },
+];
+---
+<BaseLayout title="Autos por plan">
+  <section class="hero">
+    <div class="container inner">
+      <div>
+        <h1>Planes FIAT de ahorro hasta 100% financiados</h1>
+        <p>Accedé a tu FIAT 0 km con cuotas accesibles y financiación oficial.</p>
+        <div class="cta">
+          <a href="#planes" class="btn btn-primary">Ver planes</a>
+          <a href="#contacto" class="btn btn-secondary">Asesoría</a>
+        </div>
+        <div class="stats">
+          <div class="stat"><div class="value">+20</div><div class="label">Modelos</div></div>
+          <div class="stat"><div class="value">100%</div><div class="label">Financiados</div></div>
+          <div class="stat"><div class="value">84–120</div><div class="label">Cuotas</div></div>
+        </div>
+      </div>
+      
+    </div>
+  </section>
+  <section id="planes" class="section">
+    <div class="container">
+      <h2 class="section-title">Planes FIAT disponibles</h2>
+      <div class="cards">
+        {planes.map((p)=> (
+          <article class="card">
+            {p.img && <div class="image"><img src={p.img} alt={`FIAT ${p.modelo}`} loading="lazy" /></div>}
+            <div class="brand">Plan {p.marca}</div>
+            <div class="price">Cuotas desde {p.precio}</div>
+            <div class="model">{p.modelo}</div>
+            {p.version && <div class="detail">{p.version}</div>}
+            <div class="detail">{p.financiamiento}</div>
+            <div class="actions"><a class="btn" href="#contacto">Solicitar asesor FIAT</a></div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+  <section id="contacto" class="section">
+    <div class="container">
+      <h2 class="section-title">Contacto</h2>
+      <form class="contact-form">
+        <div class="form-grid">
+          <input type="text" placeholder="Nombre" style="padding:12px;border:1px solid var(--border);border-radius:8px" />
+          <input type="tel" placeholder="Teléfono" style="padding:12px;border:1px solid var(--border);border-radius:8px" />
+          <input type="email" placeholder="Email" style="padding:12px;border:1px solid var(--border);border-radius:8px" />
+          <select style="padding:12px;border:1px solid var(--border);border-radius:8px">
+            <option>Marca</option>
+            {Array.from(new Set(planes.map(p=>p.marca))).map(m=> <option>{m}</option>)}
+          </select>
+          <textarea rows="4" placeholder="Consulta" class="full" style="padding:12px;border:1px solid var(--border);border-radius:8px"></textarea>
+        </div>
+        <div style="margin-top:12px"><button class="btn" style="background:#0d6efd;color:#fff" type="button">Enviar</button></div>
+      </form>
+    </div>
+  </section>
+</BaseLayout>
