@@ -69,6 +69,9 @@ import ContactForm from "../components/ContactForm.astro";
           consultaArea.value = base;
         }
         contactSection?.scrollIntoView({behavior:'smooth', block:'start'});
+        const wrap = form?.closest('.container');
+        wrap?.classList.add('contact-pulse');
+        setTimeout(()=>{ wrap?.classList.remove('contact-pulse'); }, 1600);
       });
     });
     // prefill por query lo maneja ContactForm

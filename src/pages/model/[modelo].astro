@@ -97,6 +97,9 @@ const { data } = Astro.props;
                     const planStr = activeTab ? `Plan ${activeTab.dataset.percent}% financiado` : '';
                     if(window.planSelectedByUser && planStr && planTipoSelect){ planTipoSelect.value = planStr; }
                     contactSection.scrollIntoView({behavior:'smooth', block:'start'});
+                    const wrap = form.closest('.container');
+                    wrap?.classList.add('contact-pulse');
+                    setTimeout(()=>{ wrap?.classList.remove('contact-pulse'); }, 1600);
                   }
                 });
               });
