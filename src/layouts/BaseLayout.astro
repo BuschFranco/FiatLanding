@@ -12,6 +12,7 @@ const { title = "FIAT por plan" } = Astro.props;
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet" />
   </head>
   <body>
+    <div id="page-loader" class="page-loader"></div>
     <header class="site-header">
       <div class="container header-inner">
         <a href="/" class="brand">FIAT por plan</a>
@@ -27,9 +28,25 @@ const { title = "FIAT por plan" } = Astro.props;
     <footer class="site-footer">
       <div class="container footer-inner">
         <div class="footer-brand">FIAT por plan</div>
-        <div class="footer-copy">© {new Date().getFullYear()} FIAT por plan. Todos los derechos reservados.</div>
+        <div class="footer-copy">© {new Date().getFullYear()} FIAT por plan. Todos los derechos reservados. · <a href="/legal#terminos">Términos y Condiciones</a> · <a href="/legal#privacidad">Políticas de Privacidad</a></div>
       </div>
     </footer>
+    <script>
+      const l = document.getElementById('page-loader');
+      const MIN_MS = 150;
+      const TRANS_MS = 700;
+      function hide(){ if(l){ l.classList.add('hidden'); setTimeout(()=>{ try{ l.remove(); }catch(_){ } }, TRANS_MS + 50); } }
+      if(document.readyState === 'complete') {
+        setTimeout(hide, MIN_MS);
+      } else {
+        const start = performance.now();
+        window.addEventListener('load', ()=>{
+          const elapsed = performance.now() - start;
+          const wait = Math.max(0, MIN_MS - elapsed);
+          setTimeout(hide, wait);
+        });
+      }
+    </script>
   </body>
   
 </html>

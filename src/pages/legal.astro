@@ -1,0 +1,28 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+<BaseLayout title="Legal">
+  <section class="section">
+    <div class="container">
+      <h1 class="section-title">Información Legal</h1>
+      <div class="card" style="margin-bottom:16px">
+        <div class="model" id="terminos">Términos y Condiciones</div>
+        <div class="detail">Uso del sitio: Este sitio ofrece información de planes de financiación FIAT. La información puede contener variaciones y se presenta con carácter orientativo.</div>
+        <div class="detail">Responsabilidad: El uso del sitio es bajo exclusiva responsabilidad del usuario. No garantizamos disponibilidad continua ni ausencia de errores.</div>
+        <div class="detail">Precios y planes: Los valores y condiciones son estimativos y pueden cambiar sin previo aviso. La adjudicación y financiación están sujetas a políticas del proveedor.</div>
+        <div class="detail">Propiedad intelectual: Marcas, imágenes y contenidos pertenecen a sus respectivos titulares. No está permitido el uso sin autorización.</div>
+        <div class="detail">Contacto: Para consultas, utilizá el formulario de contacto del sitio.</div>
+      </div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="model" id="privacidad">Políticas de Privacidad</div>
+        <div class="detail">Datos recolectados: Nombre y Apellido, Email, Modelo de interés, Lugar y mensaje. Opcionalmente se pueden incluir otros datos provistos por el usuario.</div>
+        <div class="detail">Finalidad: Responder consultas y brindar asesoría comercial relacionada con planes FIAT. Podemos contactarte por los medios provistos.</div>
+        <div class="detail">Bases legales: Tratamos los datos con tu consentimiento al enviar el formulario. Podés solicitar acceso, rectificación o eliminación.</div>
+        <div class="detail">Transferencias: El enlace de WhatsApp redirige a servicios externos; sus políticas de privacidad aplican de forma independiente.</div>
+        <div class="detail">Conservación: Los datos se conservan por el tiempo necesario para gestionar tu solicitud y cumplir obligaciones legales.</div>
+        <div class="detail">Derechos: Podés ejercer tus derechos escribiendo mediante el formulario de contacto.</div>
+        <div class="detail">Fecha de última actualización: {new Date().toLocaleDateString('es-AR')}</div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

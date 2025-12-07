@@ -1,0 +1,161 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { planes } from "../../data/planes";
+import ContactForm from "../../components/ContactForm.astro";
+export function getStaticPaths() {
+  return planes.map(p=>({ params: { modelo: p.slug }, props: { data: p } }));
+}
+const { data } = Astro.props;
+---
+<BaseLayout title={data ? `FIAT ${data.modelo}` : "Modelo FIAT"}>
+  <section class="section">
+    <div class="container">
+      {data ? (
+        <>
+          <h1 class="section-title">Plan de ahorro <span class="highlight">FIAT {data.modelo}</span></h1>
+          <div class="model-top">
+            {data.img && <div class="image" style="border-radius:12px;overflow:hidden;background:#fbe9ea"><img src={data.img} alt={`FIAT ${data.modelo}`} style="width:100%;display:block" loading="lazy" /></div>}
+            <div>
+              <div class="tabs">
+                <div class="tabs-left">
+                  <button class="tab active" data-percent="70">Plan 70% financiado</button>
+                  <button class="tab" data-percent="90">Plan 90% financiado</button>
+                </div>
+                {data.img && <div class="image-mini"><img src={data.img} alt={`FIAT ${data.modelo}`} loading="lazy" /></div>}
+              </div>
+              <div id="prices" class="card">
+                <div class="prices-grid">
+                  <div class="card price-card" style="margin:0">
+                    <div class="model">cuota desde</div>
+                    <div class="price" id="cuota-desde">$0</div>
+                  </div>
+                  <div class="card price-card" style="margin:0">
+                    <div class="model">cuota pura</div>
+                    <div class="price" id="cuota-pura">$0</div>
+                  </div>
+                </div>
+                <div class="detail">precio</div>
+                <div class="price" id="precio-vehiculo">$0</div>
+                <div class="detail" style="margin-top:8px">Consulta sin compromiso. Un asesor oficial se comunicará con vos.</div>
+              </div>
+              <div class="cta" style="margin-top:12px">
+                <a class="btn" style="background:var(--primary);color:#fff;width:100%" href="#contacto" data-model={data.modelo}>Solicitar asesor FIAT</a>
+              </div>
+            </div>
+          </div>
+          
+          <script define:vars={{ PRICE: data.precioVehiculo ?? 30000000 }}>
+            const CUOTAS = 84;
+            const ADMIN_FACTOR = 1.2;
+            const fmt = (n)=> new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',maximumFractionDigits:0}).format(n);
+            window.planSelectedByUser = false;
+            function update(percent){
+              const financed = PRICE * (percent/100);
+              const pura = Math.round(financed / CUOTAS);
+              const desde = Math.round(pura * ADMIN_FACTOR);
+              document.getElementById('cuota-pura').textContent = fmt(pura);
+              document.getElementById('cuota-desde').textContent = fmt(desde);
+              document.getElementById('precio-vehiculo').textContent = fmt(PRICE);
+            }
+            update(70);
+            document.querySelectorAll('.tab').forEach(t=>{
+              t.addEventListener('click',()=>{
+                const prices = document.getElementById('prices');
+                document.querySelectorAll('.tab').forEach(b=> b.classList.remove('active'));
+                t.classList.add('active');
+                prices?.classList.add('switching');
+                const percent = parseInt(t.dataset.percent,10);
+                setTimeout(()=>{
+                  update(percent);
+                  prices?.classList.remove('switching');
+                  const planSelect = document.querySelector('.contact-form select[name="planTipo"]');
+                  const planStr = `Plan ${percent}% financiado`;
+                  if(planSelect){ planSelect.value = planStr; }
+                  window.planSelectedByUser = true;
+                }, 140);
+              });
+            });
+          </script>
+          <script>
+            document.addEventListener('DOMContentLoaded', ()=>{
+              document.querySelectorAll('a[data-model]')?.forEach(btn=>{
+                btn.addEventListener('click',(e)=>{
+                  const model = btn.getAttribute('data-model') || '';
+                  const form = document.querySelector('.contact-form');
+                  const contactSection = document.getElementById('contacto');
+                  const modelSelect = form?.querySelector('select[name="modelo"]');
+                  const planTipoSelect = form?.querySelector('select[name="planTipo"]');
+                  const consultaArea = form?.querySelector('textarea[name="consulta"]');
+                  if(form && contactSection){
+                    e.preventDefault();
+                    if(modelSelect){
+                      const opt = Array.from(modelSelect.options).find(o=>o.value===model || o.text===model);
+                      if(opt){ modelSelect.value = opt.value || model; }
+                    }
+                    if(consultaArea){ consultaArea.value = `Me gustaría recibir información sobre ${model}`; }
+                    const activeTab = document.querySelector('.tab.active');
+                    const planStr = activeTab ? `Plan ${activeTab.dataset.percent}% financiado` : '';
+                    if(window.planSelectedByUser && planStr && planTipoSelect){ planTipoSelect.value = planStr; }
+                    contactSection.scrollIntoView({behavior:'smooth', block:'start'});
+                  }
+                });
+              });
+            });
+          </script>
+          {data.specs && (
+            <div class="card" style="margin-bottom:16px">
+              <div class="model">Especificaciones técnicas</div>
+              <div class="detail">Motor: {data.specs.motor}</div>
+              <div class="detail">Potencia: {data.specs.potencia}</div>
+              <div class="detail">Torque: {data.specs.torque}</div>
+              <div class="detail">Transmisión: {data.specs.transmision}</div>
+              <div class="detail">Tracción: {data.specs.traccion}</div>
+              {data.specs.dim && <div class="detail">Dimensiones: {data.specs.dim}</div>}
+            </div>
+          )}
+          <div class="details-grid">
+            <div class="card">
+              <div class="model">Características del plan de ahorro FIAT {data.modelo}</div>
+              <div class="detail">El plan financia un porcentaje del vehículo en 84 cuotas. El resto se licita o se abona al momento de la adjudicación.</div>
+              <ul class="bullets" style="margin:12px 0 0 16px">
+                <li>Licitar a partir de la segunda cuota.</li>
+                <li>Participás del sorteo de adjudicación.</li>
+                <li>Cuotas con gastos administrativos incluidos.</li>
+                <li>Evaluamos la toma de tu usado.</li>
+                <li>Adelanto de cuotas puras.</li>
+                <li>Bonificación por débito automático.</li>
+              </ul>
+              <div style="margin-top:12px;background:var(--primary);color:#fff;padding:10px 12px;border-radius:8px;font-weight:700">Entregas aseguradas cuotas 4/9/12/24/36</div>
+            </div>
+            <div class="card">
+              <div class="model">Detalle de cuotas</div>
+              <div class="detail">Cuota pura: Consultar</div>
+              <div class="detail">Suscripción: Prorrateada</div>
+              <div class="detail">Cuota 1: Consultar</div>
+              <div class="detail">Cuotas 2 a 13: Consultar</div>
+              <div class="detail">Cuotas 14 a 18: Consultar</div>
+              <div class="detail">Cuotas 19 a 42: Consultar</div>
+              <div class="detail">Cuotas 43 a 84: Consultar</div>
+              <div class="detail">Alicuota extraordinaria: Consultar</div>
+            </div>
+          </div>
+          <div class="card" style="margin-bottom:16px">
+            <div class="model">Medios de pago</div>
+            <div class="detail">Transferencia bancaria, débito automático, tarjetas (Visa, MasterCard, Amex), Rapipago, PagoMisCuentas.</div>
+          </div>
+          <div class="cta" style="display:flex;gap:12px">
+            <a class="btn" style="background:var(--primary);color:#fff;width:100%" href="#contacto" data-model={data.modelo}>Solicitar asesor FIAT</a>
+            <a class="btn btn-outline" href="/">Volver</a>
+          </div>
+        </>
+      ) : (
+        <>
+          <h1 class="section-title">Modelo no encontrado</h1>
+          <a class="btn btn-outline" href="/">Volver</a>
+        </>
+      )}
+    </div>
+  </section>
+  
+  {data && <ContactForm defaultModel={data.modelo} />}
+</BaseLayout>

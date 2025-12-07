@@ -1,0 +1,98 @@
+---
+import { WHATSAPP_PHONE } from "../config";
+import { planes } from "../data/planes";
+const { defaultModel = "" } = Astro.props;
+---
+<section id="contacto" class="section">
+  <div class="container">
+    <h2 class="section-title">Contacto</h2>
+    <form class="contact-form">
+      <div class="form-grid">
+        <input name="nombre" type="text" placeholder="Nombre y Apellido" style="padding:12px;border:1px solid var(--border);border-radius:8px" />
+        <select name="modelo" style="padding:12px;border:1px solid var(--border);border-radius:8px">
+          <option value="">Modelo</option>
+          {Array.from(new Set(planes.map(p=>p.modelo))).map(m=> <option selected={defaultModel===m}>{m}</option>)}
+        </select>
+        <select name="planTipo" style="padding:12px;border:1px solid var(--border);border-radius:8px">
+          <option value="">Tipo de Plan (Opcional)</option>
+          <option value="Plan 70% financiado">Plan 70% financiado</option>
+          <option value="Plan 90% financiado">Plan 90% financiado</option>
+        </select>
+        <select name="provincia" style="padding:12px;border:1px solid var(--border);border-radius:8px">
+          <option value="">Lugar</option>
+          <option value="Capital Federal">Capital Federal</option>
+          <option value="GBA Norte">GBA Norte</option>
+          <option value="GBA Oeste">GBA Oeste</option>
+          <option value="GBA Sur">GBA Sur</option>
+          <option value="Buenos Aires">Buenos Aires</option>
+          <option value="Catamarca">Catamarca</option>
+          <option value="Córdoba">Córdoba</option>
+          <option value="Corrientes">Corrientes</option>
+          <option value="Chaco">Chaco</option>
+          <option value="Chubut">Chubut</option>
+          <option value="Entre Ríos">Entre Ríos</option>
+          <option value="Formosa">Formosa</option>
+          <option value="Jujuy">Jujuy</option>
+          <option value="La Pampa">La Pampa</option>
+          <option value="La Rioja">La Rioja</option>
+          <option value="Mendoza">Mendoza</option>
+          <option value="Misiones">Misiones</option>
+          <option value="Neuquén">Neuquén</option>
+          <option value="Río Negro">Río Negro</option>
+          <option value="Salta">Salta</option>
+          <option value="San Juan">San Juan</option>
+          <option value="San Luis">San Luis</option>
+          <option value="Santa Fe">Santa Fe</option>
+          <option value="Santa Cruz">Santa Cruz</option>
+          <option value="Santiago del Estero">Santiago del Estero</option>
+          <option value="Tierra del Fuego">Tierra del Fuego</option>
+          <option value="Tucumán">Tucumán</option>
+        </select>
+        
+        <textarea name="consulta" rows="4" placeholder="Consulta" class="full" style="padding:12px;border:1px solid var(--border);border-radius:8px"></textarea>
+      </div>
+      <div class="form-error" aria-live="polite"></div>
+      <div style="margin-top:12px"><button class="btn" style="background:#0d6efd;color:#fff;padding:14px 18px;font-size:16px;border-radius:12px;min-height:48px;width:100%" type="submit">Enviar</button></div>
+      <div class="whatsapp-fallback" style="display:none"></div>
+    </form>
+  </div>
+</section>
+<script>
+  const form = document.querySelector('.contact-form');
+  const err = document.querySelector('.form-error');
+  const fallback = document.querySelector('.whatsapp-fallback');
+  const modelSelect = form?.querySelector('select[name="modelo"]');
+  const planTipoSelect = form?.querySelector('select[name="planTipo"]');
+  const provinciaSelect = form?.querySelector('select[name="provincia"]');
+  const consultaArea = form?.querySelector('textarea[name="consulta"]');
+  function prefillFromQuery(){
+    const params = new URLSearchParams(location.search);
+    const qModel = params.get('modelo');
+    const qPlan = params.get('plan');
+    if(qModel && modelSelect){
+      const opt = Array.from(modelSelect.options).find(o=>o.value===qModel || o.text===qModel);
+      if(opt){ modelSelect.value = opt.value || qModel; }
+      if(consultaArea){ consultaArea.value = `Me gustaría recibir información sobre ${qModel}`; }
+    }
+    if(qPlan && planTipoSelect){
+      const opt = Array.from(planTipoSelect.options).find(o=>o.value===qPlan || o.text===qPlan);
+      if(opt){ planTipoSelect.value = opt.value || qPlan; }
+    }
+  }
+  prefillFromQuery();
+  form?.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const data = new FormData(form);
+    const nombre = (data.get('nombre')||'').toString().trim();
+    const consulta = (data.get('consulta')||'').toString().trim();
+    const modelo = (data.get('modelo')||'').toString().trim();
+    const planTipo = (data.get('planTipo')||'').toString().trim();
+    const provincia = (data.get('provincia')||'').toString().trim();
+    if(!nombre){ if(err) err.textContent = 'Completá tu nombre y apellido.'; return; }
+    const mensaje = `Hola! Quiero info de FIAT por plan\nNombre y Apellido: ${nombre}${modelo?`\nModelo: ${modelo}`:''}${planTipo?`\nTipo de Plan: ${planTipo}`:''}${provincia?`\nLugar: ${provincia}`:''}\nConsulta: ${consulta}`;
+    const url = `https://api.whatsapp.com/send?phone=${WHATSAPP_PHONE}&text=${encodeURIComponent(mensaje)}`;
+    if(err) err.textContent = '';
+    try{ const win = window.open(url, '_blank'); if(!win && fallback){ fallback.innerHTML = `<a href="${url}">Abrir WhatsApp</a>`; fallback.style.display = 'block'; } }
+    catch(_){ if(fallback){ fallback.innerHTML = `<a href="${url}">Abrir WhatsApp</a>`; fallback.style.display = 'block'; } }
+  });
+</script>
