@@ -47,6 +47,20 @@ const { title = "FIAT por plan" } = Astro.props;
         });
       }
     </script>
+    <script>
+      document.addEventListener('DOMContentLoaded', ()=>{
+        document.querySelectorAll('a[href="#contacto"]:not([data-model])')?.forEach(link=>{
+          link.addEventListener('click', ()=>{
+            const form = document.querySelector('.contact-form');
+            const wrap = form?.closest('.container');
+            const contactSection = document.getElementById('contacto');
+            contactSection?.scrollIntoView({behavior:'smooth', block:'start'});
+            wrap?.classList.add('contact-pulse');
+            setTimeout(()=>{ wrap?.classList.remove('contact-pulse'); }, 1600);
+          });
+        });
+      });
+    </script>
   </body>
   
 </html>

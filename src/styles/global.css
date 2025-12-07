@@ -13,7 +13,7 @@ body{font-family:Montserrat,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Canta
 .btn:hover{transform:translateY(-1px)}
 .btn-outline{border-color:var(--border)}
 .btn, .btn:visited, .btn:hover, .btn:active{ text-decoration:none }
-.hero{position:relative;background:linear-gradient(90deg,var(--primary) 0%,var(--primary-2) 100%);color:#fff}
+.hero{position:relative;background:linear-gradient(90deg,var(--primary) 0%,var(--primary-2) 100%);color:#fff;overflow:hidden;border-bottom:1px solid var(--border)}
 .hero:before{content:"";position:absolute;inset:0;background:url('/images/background.jpg') center/cover no-repeat;filter:blur(3px);transform:scale(1.06);z-index:0}
 .hero .inner{display:grid;grid-template-columns:1.2fr .8fr;gap:24px;padding:56px 0}
 .hero .inner>*{position:relative;z-index:1}
@@ -36,7 +36,7 @@ body{font-family:Montserrat,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Canta
 .highlight{color:var(--primary);font-weight:700}
 .bullets li::marker{color:var(--primary);font-weight:700}
 .card .price{font-size:20px;font-weight:700;margin:8px 0}
-.card .model{font-size:16px;font-weight:600}
+.card .model{font-size:16px;font-weight:700;color:var(--primary)}
 .card .detail{font-size:13px;color:var(--muted);margin-top:6px}
 .card .actions{margin-top:12px}
 .card .btn{width:100%;background:var(--primary);color:#fff}

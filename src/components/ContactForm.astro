@@ -52,12 +52,12 @@ const { defaultModel = "" } = Astro.props;
         <textarea name="consulta" rows="4" placeholder="Consulta" class="full" style="padding:12px;border:1px solid var(--border);border-radius:8px"></textarea>
       </div>
       <div class="form-error" aria-live="polite"></div>
-      <div style="margin-top:12px"><button class="btn" style="background:#0d6efd;color:#fff;padding:14px 18px;font-size:16px;border-radius:12px;min-height:48px;width:100%" type="submit">Enviar</button></div>
+      <div style="margin-top:12px"><button class="btn" style="background:#0d6efd;color:#fff;padding:14px 18px;font-size:16px;border-radius:12px;min-height:48px;width:100%;cursor:pointer" type="submit">Enviar</button></div>
       <div class="whatsapp-fallback" style="display:none"></div>
     </form>
   </div>
 </section>
-<script>
+<script define:vars={{ WHATSAPP_PHONE }}>
   const form = document.querySelector('.contact-form');
   const err = document.querySelector('.form-error');
   const fallback = document.querySelector('.whatsapp-fallback');
