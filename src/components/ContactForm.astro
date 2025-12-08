@@ -10,22 +10,7 @@ const { defaultModel = "" } = Astro.props;
       <div class="form-grid">
         <input name="nombre" type="text" placeholder="Nombre y Apellido" style="padding:12px;border:1px solid var(--border);border-radius:8px" />
         <div class="phone-row" style="display:flex;gap:8px;align-items:center">
-          <select name="codigoPais" style="padding:12px;border:1px solid var(--border);border-radius:8px;width:90px">
-            <option value="+54">🇦🇷 +54</option>
-            <option value="+598">🇺🇾 +598</option>
-            <option value="+56">🇨🇱 +56</option>
-            <option value="+57">🇨🇴 +57</option>
-            <option value="+51">🇵🇪 +51</option>
-            <option value="+52">🇲🇽 +52</option>
-            <option value="+55">🇧🇷 +55</option>
-            <option value="+1">🇺🇸 +1</option>
-            <option value="+34">🇪🇸 +34</option>
-            <option value="+44">🇬🇧 +44</option>
-            <option value="+33">🇫🇷 +33</option>
-            <option value="+39">🇮🇹 +39</option>
-            <option value="+49">🇩🇪 +49</option>
-          </select>
-          <input name="numero" type="tel" placeholder="Número de teléfono" minlength="9" required inputmode="numeric" style="padding:12px;border:1px solid var(--border);border-radius:8px;flex:1" />
+          <input name="numero" type="tel" placeholder="Número de teléfono" minlength="10" maxlength="11" required inputmode="numeric" style="padding:12px;border:1px solid var(--border);border-radius:8px;flex:1" />
         </div>
         <select name="modelo" style="padding:12px;border:1px solid var(--border);border-radius:8px">
           <option value="">Modelo</option>
@@ -104,7 +89,6 @@ const { defaultModel = "" } = Astro.props;
     e.preventDefault();
     const data = new FormData(form);
     const nombre = (data.get('nombre')||'').toString().trim();
-    const codigoPais = (data.get('codigoPais')||'').toString().trim();
     const numero = (data.get('numero')||'').toString().trim();
     const consulta = (data.get('consulta')||'').toString().trim();
     const modelo = (data.get('modelo')||'').toString().trim();
@@ -113,12 +97,12 @@ const { defaultModel = "" } = Astro.props;
     if(!nombre){ if(err) err.textContent = 'Completá tu nombre y apellido.'; return; }
     const numDigits = numero.replace(/\D/g,'').length;
     if(!numero || numDigits < 9){ if(err) err.textContent = 'Ingresá tu número de teléfono (mínimo 9 dígitos).'; return; }
-    const mensaje = `Hola! Quiero info de FIAT por plan\nNombre y Apellido: ${nombre}${numero?`\nNúmero: ${codigoPais?codigoPais+' ':''}${numero}`:''}${modelo?`\nModelo: ${modelo}`:''}${planTipo?`\nTipo de Plan: ${planTipo}`:''}${provincia?`\nLugar: ${provincia}`:''}\nConsulta: ${consulta}`;
+    const mensaje = `Hola! Quiero info de FIAT por plan\nNombre y Apellido: ${nombre}${numero?`\nNúmero: ${numero}`:''}${modelo?`\nModelo: ${modelo}`:''}${planTipo?`\nTipo de Plan: ${planTipo}`:''}${provincia?`\nLugar: ${provincia}`:''}\nConsulta: ${consulta}`;
     const url = `https://api.whatsapp.com/send?phone=${WHATSAPP_PHONE}&text=${encodeURIComponent(mensaje)}`;
     if(err) err.textContent = '';
     if(success){ success.style.display = 'none'; success.textContent = ''; }
     try{
-      const res = await fetch('https://formsubmit.co/ajax/francobusch130@gmail.com', { method:'POST', headers:{ 'Content-Type':'application/json', 'Accept':'application/json' }, body: JSON.stringify({ nombre, codigoPais, numero, modelo, planTipo, provincia, consulta }) });
+      const res = await fetch('https://formsubmit.co/ajax/francobusch130@gmail.com', { method:'POST', headers:{ 'Content-Type':'application/json', 'Accept':'application/json' }, body: JSON.stringify({ nombre, numero, modelo, planTipo, provincia, consulta }) });
       if(success){ success.textContent = '¡Consulta enviada! Nos pondremos en contacto a la brevedad.'; success.style.display = 'block'; }
     }catch(_){ if(success){ success.textContent = '¡Consulta enviada! Nos pondremos en contacto a la brevedad.'; success.style.display = 'block'; } }
     try{ const win = window.open(url, '_blank'); if(!win && fallback){ fallback.innerHTML = `<a href="${url}">Abrir WhatsApp</a>`; fallback.style.display = 'block'; } }
