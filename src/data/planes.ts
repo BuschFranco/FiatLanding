@@ -23,7 +23,7 @@ export const planes = [
     modelo: "Mobi",
     version: "1,0 EASY PACK TOP",
     financiamiento: "Plan 80% financiado en 84 cuotas",
-    img: "/images/models/mobi.png",
+    img: "/images/models/mobi.webp",
     slug: "mobi",
     precioVehiculo: 24500000,
     specs: {
@@ -41,7 +41,7 @@ export const planes = [
     modelo: "Argo",
     version: "ENDURANCE CD 1.4",
     financiamiento: "Plan 70% financiado en 84 cuotas",
-    img: "/images/models/argo.png",
+    img: "/images/models/argo.webp",
     slug: "argo",
     precioVehiculo: 37520900,
     specs: {
