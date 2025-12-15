@@ -110,7 +110,7 @@ const { defaultModel = "" } = Astro.props;
       const res = await fetch('https://formsubmit.co/ajax/francobusch130@gmail.com', { method:'POST', headers:{ 'Content-Type':'application/json', 'Accept':'application/json' }, body: JSON.stringify({ nombre, numero, modelo, planTipo, provincia, consulta }) });
       if(res && res.ok){
         if(success){ success.textContent = '¡Consulta enviada! Nos pondremos en contacto a la brevedad.'; success.style.display = 'block'; }
-        try{ gtag('event','conversion', { send_to: 'AW-16671908962/D-F_COrc_9EbE0LISf0-' }); }catch(_){ }
+        try{ gtag_report_conversion(); }catch(_){ }
         if(submitBtn){ submitBtn.disabled = false; submitBtn.removeAttribute('aria-busy'); }
         if(submitLabel){ submitLabel.style.opacity = '1'; }
         if(submitLoader){ submitLoader.style.display = 'none'; submitBtn?.classList.remove('loading'); }
