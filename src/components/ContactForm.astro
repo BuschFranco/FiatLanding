@@ -56,16 +56,19 @@ const { defaultModel = "" } = Astro.props;
       </div>
       <div class="form-error" aria-live="polite"></div>
       <div class="form-success" aria-live="polite" style="display:none;background:#d1e7dd;color:#0f5132;border:1px solid #badbcc;padding:12px;border-radius:8px;margin-top:12px"></div>
-      <div style="margin-top:12px"><button class="btn" style="background:#0d6efd;color:#fff;padding:14px 18px;font-size:16px;border-radius:12px;min-height:48px;width:100%;cursor:pointer" type="submit">Enviar</button></div>
-      <div class="whatsapp-fallback" style="display:none"></div>
+      <div style="margin-top:12px"><button class="btn submit-btn" style="background:#0d6efd;color:#fff;padding:14px 18px;font-size:16px;border-radius:12px;min-height:48px;width:100%;cursor:pointer;position:relative" type="submit"><span class="btn-label">Enviar</span><span class="btn-loader" aria-hidden="true" style="display:none;width:16px;height:16px;border:2px solid rgba(255,255,255,0.35);border-top-color:#fff;border-radius:50%;margin-left:8px;vertical-align:middle"></span></button></div>
     </form>
   </div>
 </section>
-<script define:vars={{ WHATSAPP_PHONE }}>
+<script>
   const form = document.querySelector('.contact-form');
   const err = document.querySelector('.form-error');
-  const fallback = document.querySelector('.whatsapp-fallback');
   const success = document.querySelector('.form-success');
+  const submitBtn = form?.querySelector('.submit-btn');
+  const submitLabel = submitBtn?.querySelector('.btn-label');
+  const submitLoader = submitBtn?.querySelector('.btn-loader');
+  const nombreInput = form?.querySelector('input[name="nombre"]');
+  const numeroInput = form?.querySelector('input[name="numero"]');
   const modelSelect = form?.querySelector('select[name="modelo"]');
   const planTipoSelect = form?.querySelector('select[name="planTipo"]');
   const provinciaSelect = form?.querySelector('select[name="provincia"]');
@@ -98,14 +101,34 @@ const { defaultModel = "" } = Astro.props;
     const numDigits = numero.replace(/\D/g,'').length;
     if(!numero || numDigits < 9){ if(err) err.textContent = 'Ingresá tu número de teléfono (mínimo 9 dígitos).'; return; }
     const mensaje = `Hola! Quiero info de FIAT por plan\nNombre y Apellido: ${nombre}${numero?`\nNúmero: ${numero}`:''}${modelo?`\nModelo: ${modelo}`:''}${planTipo?`\nTipo de Plan: ${planTipo}`:''}${provincia?`\nLugar: ${provincia}`:''}\nConsulta: ${consulta}`;
-    const url = `https://api.whatsapp.com/send?phone=${WHATSAPP_PHONE}&text=${encodeURIComponent(mensaje)}`;
     if(err) err.textContent = '';
     if(success){ success.style.display = 'none'; success.textContent = ''; }
+    if(submitBtn){ submitBtn.disabled = true; submitBtn.setAttribute('aria-busy','true'); }
+    if(submitLabel){ submitLabel.textContent = 'Enviando…'; }
+    if(submitLoader){ submitLoader.style.display = 'inline-block'; submitBtn?.classList.add('loading'); }
     try{
       const res = await fetch('https://formsubmit.co/ajax/francobusch130@gmail.com', { method:'POST', headers:{ 'Content-Type':'application/json', 'Accept':'application/json' }, body: JSON.stringify({ nombre, numero, modelo, planTipo, provincia, consulta }) });
-      if(success){ success.textContent = '¡Consulta enviada! Nos pondremos en contacto a la brevedad.'; success.style.display = 'block'; }
-    }catch(_){ if(success){ success.textContent = '¡Consulta enviada! Nos pondremos en contacto a la brevedad.'; success.style.display = 'block'; } }
-    try{ const win = window.open(url, '_blank'); if(!win && fallback){ fallback.innerHTML = `<a href="${url}">Abrir WhatsApp</a>`; fallback.style.display = 'block'; } }
-    catch(_){ if(fallback){ fallback.innerHTML = `<a href="${url}">Abrir WhatsApp</a>`; fallback.style.display = 'block'; } }
+      if(res && res.ok){
+        if(success){ success.textContent = '¡Consulta enviada! Nos pondremos en contacto a la brevedad.'; success.style.display = 'block'; }
+        try{ gtag('event','conversion', { send_to: 'AW-16671908962/D-F_COrc_9EbE0LISf0-' }); }catch(_){ }
+        if(submitBtn){ submitBtn.disabled = false; submitBtn.removeAttribute('aria-busy'); }
+        if(submitLabel){ submitLabel.textContent = 'Enviar'; }
+        if(submitLoader){ submitLoader.style.display = 'none'; submitBtn?.classList.remove('loading'); }
+        if(nombreInput){ nombreInput.value = ''; }
+        if(numeroInput){ numeroInput.value = ''; }
+        if(modelSelect){ modelSelect.value = ''; }
+        if(planTipoSelect){ planTipoSelect.value = ''; }
+        if(provinciaSelect){ provinciaSelect.value = ''; }
+        if(consultaArea){ consultaArea.value = ''; }
+      } else {
+        if(submitBtn){ submitBtn.disabled = false; submitBtn.removeAttribute('aria-busy'); }
+        if(submitLabel){ submitLabel.textContent = 'Enviar'; }
+        if(submitLoader){ submitLoader.style.display = 'none'; submitBtn?.classList.remove('loading'); }
+      }
+    }catch(_){ 
+      if(submitBtn){ submitBtn.disabled = false; submitBtn.removeAttribute('aria-busy'); }
+      if(submitLabel){ submitLabel.textContent = 'Enviar'; }
+      if(submitLoader){ submitLoader.style.display = 'none'; submitBtn?.classList.remove('loading'); }
+    }
   });
 </script>
