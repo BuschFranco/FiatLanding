@@ -56,7 +56,7 @@ const { defaultModel = "" } = Astro.props;
       </div>
       <div class="form-error" aria-live="polite"></div>
       <div class="form-success" aria-live="polite" style="display:none;background:#d1e7dd;color:#0f5132;border:1px solid #badbcc;padding:12px;border-radius:8px;margin-top:12px"></div>
-      <div style="margin-top:12px"><button class="btn submit-btn" style="background:#0d6efd;color:#fff;padding:14px 18px;font-size:16px;border-radius:12px;min-height:48px;width:100%;cursor:pointer;position:relative" type="submit"><span class="btn-label">Enviar</span><span class="btn-loader" aria-hidden="true" style="display:none;width:16px;height:16px;border:2px solid rgba(255,255,255,0.35);border-top-color:#fff;border-radius:50%;margin-left:8px;vertical-align:middle"></span></button></div>
+      <div style="margin-top:12px"><button class="btn submit-btn" style="background:#0d6efd;color:#fff;padding:14px 18px;font-size:16px;border-radius:12px;min-height:48px;width:100%;cursor:pointer;position:relative" type="submit"><span class="btn-label">Enviar</span><span class="btn-loader" aria-hidden="true" style="display:none;width:16px;height:16px;border:2px solid rgba(255,255,255,0.35);border-top-color:#fff;border-radius:50%;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);animation:spin .8s linear infinite"></span></button></div>
     </form>
   </div>
 </section>
@@ -104,16 +104,15 @@ const { defaultModel = "" } = Astro.props;
     if(err) err.textContent = '';
     if(success){ success.style.display = 'none'; success.textContent = ''; }
     if(submitBtn){ submitBtn.disabled = true; submitBtn.setAttribute('aria-busy','true'); }
-    if(submitLabel){ submitLabel.textContent = 'Enviando…'; }
+    if(submitLabel){ submitLabel.style.opacity = '0'; }
     if(submitLoader){ submitLoader.style.display = 'inline-block'; submitBtn?.classList.add('loading'); }
     try{
       const res = await fetch('https://formsubmit.co/ajax/francobusch130@gmail.com', { method:'POST', headers:{ 'Content-Type':'application/json', 'Accept':'application/json' }, body: JSON.stringify({ nombre, numero, modelo, planTipo, provincia, consulta }) });
       if(res && res.ok){
         if(success){ success.textContent = '¡Consulta enviada! Nos pondremos en contacto a la brevedad.'; success.style.display = 'block'; }
-        try{console.log("gtag conversion event");
-         gtag('event','conversion', { send_to: 'AW-16671908962/D-F_COrc_9EbE0LISf0-' }); }catch(_){ }
+        try{ gtag('event','conversion', { send_to: 'AW-16671908962/D-F_COrc_9EbE0LISf0-' }); }catch(_){ }
         if(submitBtn){ submitBtn.disabled = false; submitBtn.removeAttribute('aria-busy'); }
-        if(submitLabel){ submitLabel.textContent = 'Enviar'; }
+        if(submitLabel){ submitLabel.style.opacity = '1'; }
         if(submitLoader){ submitLoader.style.display = 'none'; submitBtn?.classList.remove('loading'); }
         if(nombreInput){ nombreInput.value = ''; }
         if(numeroInput){ numeroInput.value = ''; }
@@ -123,12 +122,12 @@ const { defaultModel = "" } = Astro.props;
         if(consultaArea){ consultaArea.value = ''; }
       } else {
         if(submitBtn){ submitBtn.disabled = false; submitBtn.removeAttribute('aria-busy'); }
-        if(submitLabel){ submitLabel.textContent = 'Enviar'; }
+        if(submitLabel){ submitLabel.style.opacity = '1'; }
         if(submitLoader){ submitLoader.style.display = 'none'; submitBtn?.classList.remove('loading'); }
       }
     }catch(_){ 
       if(submitBtn){ submitBtn.disabled = false; submitBtn.removeAttribute('aria-busy'); }
-      if(submitLabel){ submitLabel.textContent = 'Enviar'; }
+      if(submitLabel){ submitLabel.style.opacity = '1'; }
       if(submitLoader){ submitLoader.style.display = 'none'; submitBtn?.classList.remove('loading'); }
     }
   });

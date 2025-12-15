@@ -92,6 +92,7 @@ body{font-family:Montserrat,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Canta
   50%{box-shadow:0 0 0 10px rgba(157,10,14,.10)}
   100%{box-shadow:0 0 0 0 rgba(157,10,14,0)}
 }
+@keyframes spin{from{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(360deg)}}
 
 .model-top{display:flex;gap:16px;align-items:start;margin-bottom:16px}
 @media (min-width:1025px){.model-top .image{width:60%}}
