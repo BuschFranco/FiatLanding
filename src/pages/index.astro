@@ -3,12 +3,21 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import { WHATSAPP_PHONE } from "../config";
 import { planes } from "../data/planes";
 import ContactForm from "../components/ContactForm.astro";
+const parseARS = (str)=>{ try{ return parseInt(String(str||'').replace(/[^0-9]/g,''),10) || 0 }catch(_){ return 0 } };
+const lowestCuotaDesde = (p)=>{
+  const percents = Array.isArray(p.planPercentsVisible) ? p.planPercentsVisible : (p.planPercents ?? []);
+  const map = p.cuotaDesdePorPlan ?? {};
+  const candidates = percents.map((pct)=>({ pct, valStr: map?.[pct], valNum: parseARS(map?.[pct]) })).filter(x=> x.valNum > 0);
+  if(candidates.length === 0) return p.precio ?? "";
+  candidates.sort((a,b)=> a.valNum - b.valNum);
+  return candidates[0].valStr || p.precio || "";
+};
 ---
 <BaseLayout title="Portuauto | Planes FIAT">
   <section class="hero">
     <div class="container inner">
       <div>
-        <h1>Planes <span class="highlight">FIAT</span> de ahorro hasta <span class="highlight">100%</span> financiados</h1>
+        <h1>Planes <span class="highlight">FIAT</span> de ahorro hasta <span class="highlight">90%</span> financiados</h1>
         <p style="border-radius: 8px; padding: 8px 16px; background-color: rgba(255, 255, 255, 0.87); color:black;">Accedé a tu <span class="highlight">FIAT 0 km</span> con cuotas accesibles y financiación oficial.</p>
         <div class="cta">
           <a href="#planes" class="btn btn-primary">Ver planes</a>
@@ -16,8 +25,8 @@ import ContactForm from "../components/ContactForm.astro";
         </div>
         <div class="stats">
           <div class="stat"><div class="value">+20</div><div class="label">Modelos</div></div>
-          <div class="stat"><div class="value">100%</div><div class="label">Financiados</div></div>
-          <div class="stat"><div class="value">84–120</div><div class="label">Cuotas</div></div>
+          <div class="stat"><div class="value">90%</div><div class="label">Financiados</div></div>
+          <div class="stat"><div class="value">Hasta 84</div><div class="label">Cuotas</div></div>
         </div>
       </div>
       
@@ -31,7 +40,7 @@ import ContactForm from "../components/ContactForm.astro";
           <article class="card">
             {p.img && <div class="image"><img src={p.img} alt={`FIAT ${p.modelo}`} loading="lazy" /></div>}
             <div class="brand">Plan {p.marca}</div>
-            <div class="price">Cuotas desde {p.precio}</div>
+            <div class="price">Cuotas desde {lowestCuotaDesde(p)}</div>
             <div class="model">{p.modelo}</div>
             {p.version && <div class="detail">{p.version}</div>}
             <div class="detail">{p.financiamiento}</div>

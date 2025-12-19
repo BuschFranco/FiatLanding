@@ -18,8 +18,9 @@ const { data } = Astro.props;
             <div>
               <div class="tabs">
                 <div class="tabs-left">
-                  <button class="tab active" data-percent="70">Plan 70% financiado</button>
-                  <button class="tab" data-percent="90">Plan 90% financiado</button>
+                  {(data.planPercentsVisible ?? data.planPercents ?? [70,90]).map((p, idx)=> (
+                    <button class={`tab ${idx===0?'active':''}`} data-percent={p}>Plan {p}% financiado</button>
+                  ))}
                 </div>
                 {data.img && <div class="image-mini"><img src={data.img} alt={`FIAT ${data.modelo}`} loading="lazy" /></div>}
               </div>
@@ -34,7 +35,8 @@ const { data } = Astro.props;
                     <div class="price" id="cuota-pura">$0</div>
                   </div>
                 </div>
-                <div class="detail">precio</div>
+                <div class="detail">Anticipo: <span id="anticipo">Consultar</span></div>
+                <div class="detail">Precio vehículo</div>
                 <div class="price" id="precio-vehiculo">$0</div>
                 <div class="detail" style="margin-top:8px">Consulta sin compromiso. Un asesor oficial se comunicará con vos.</div>
               </div>
@@ -44,20 +46,32 @@ const { data } = Astro.props;
             </div>
           </div>
           
-          <script define:vars={{ PRICE: data.precioVehiculo ?? 30000000 }}>
-            const CUOTAS = 84;
-            const ADMIN_FACTOR = 1.2;
+          <script define:vars={{ PRICE: data.precioVehiculo ?? 30000000, PRICE_CFG: { cuotas: data.cuotas ?? 84, adminFactor: data.adminFactor ?? 1.2, percents: (data.planPercentsVisible ?? data.planPercents ?? [70,90]) }, CUOTA_DESDE_MAP: data.cuotaDesdePorPlan ?? {}, ANTICIPO_MAP: data.anticipoPorPlan ?? {} }}>
+            const CUOTAS = PRICE_CFG?.cuotas ?? 84;
+            const ADMIN_FACTOR = PRICE_CFG?.adminFactor ?? 1.2;
             const fmt = (n)=> new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',maximumFractionDigits:0}).format(n);
+            const parseARS = (str)=>{ try{ return parseInt(String(str).replace(/[^0-9]/g,'')||'0',10) }catch(_){ return 0 } };
             window.planSelectedByUser = false;
             function update(percent){
               const financed = PRICE * (percent/100);
-              const pura = Math.round(financed / CUOTAS);
-              const desde = Math.round(pura * ADMIN_FACTOR);
-              document.getElementById('cuota-pura').textContent = fmt(pura);
-              document.getElementById('cuota-desde').textContent = fmt(desde);
+              const override = CUOTA_DESDE_MAP && CUOTA_DESDE_MAP[percent] ? CUOTA_DESDE_MAP[percent] : "";
+              if(override && override.length){
+                const desdeNum = parseARS(override);
+                const puraNum = Math.round(desdeNum / ADMIN_FACTOR);
+                document.getElementById('cuota-pura').textContent = fmt(puraNum);
+                document.getElementById('cuota-desde').textContent = override;
+              } else {
+                const pura = Math.round(financed / CUOTAS);
+                const desde = Math.round(pura * ADMIN_FACTOR);
+                document.getElementById('cuota-pura').textContent = fmt(pura);
+                document.getElementById('cuota-desde').textContent = fmt(desde);
+              }
+              const anticipoOverride = ANTICIPO_MAP && ANTICIPO_MAP[percent] ? ANTICIPO_MAP[percent] : "";
+              document.getElementById('anticipo').textContent = anticipoOverride && anticipoOverride.length ? anticipoOverride : 'Consultar';
               document.getElementById('precio-vehiculo').textContent = fmt(PRICE);
             }
-            update(70);
+            const initial = Array.isArray(PRICE_CFG?.percents) && PRICE_CFG.percents.length ? (PRICE_CFG.percents[0]) : 70;
+            update(initial);
             document.querySelectorAll('.tab').forEach(t=>{
               t.addEventListener('click',()=>{
                 const prices = document.getElementById('prices');
@@ -132,14 +146,16 @@ const { data } = Astro.props;
             </div>
             <div class="card">
               <div class="model">Detalle de cuotas</div>
-              <div class="detail">Cuota pura: Consultar</div>
-              <div class="detail">Suscripción: Prorrateada</div>
-              <div class="detail">Cuota 1: Consultar</div>
-              <div class="detail">Cuotas 2 a 13: Consultar</div>
-              <div class="detail">Cuotas 14 a 18: Consultar</div>
-              <div class="detail">Cuotas 19 a 42: Consultar</div>
-              <div class="detail">Cuotas 43 a 84: Consultar</div>
-              <div class="detail">Alicuota extraordinaria: Consultar</div>
+              {((data.detalleCuotas) ?? [
+                { label: "Cuota 1", value: "Consultar" },
+                { label: "Cuotas 2 a 13", value: "Consultar" },
+                { label: "Cuotas 14 a 18", value: "Consultar" },
+                { label: "Cuotas 19 a 42", value: "Consultar" },
+                { label: "Cuotas 43 a 84", value: "Consultar" },
+                { label: "Alicuota extraordinaria", value: "Consultar" }
+              ]).map(item => (
+                <div class="detail">{item.label}: {item.value}</div>
+              ))}
             </div>
           </div>
           <div class="card" style="margin-bottom:16px">
@@ -160,5 +176,5 @@ const { data } = Astro.props;
     </div>
   </section>
   
-  {data && <ContactForm defaultModel={data.modelo} />}
+  {data && <ContactForm defaultModel={data.modelo} availablePercents={data.planPercentsVisible ?? data.planPercents} />}
 </BaseLayout>

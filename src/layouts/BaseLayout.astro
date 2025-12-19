@@ -35,7 +35,7 @@ const { title = "Portuauto | Planes FIAT" } = Astro.props;
           <img style="width: 12rem;" src="/images/logo.webp" alt="Portuauto" />
         </a>
         <nav class="nav">
-          <a href="#planes" style="text-decoration: underline;">Planes <span style="font-weight:600; color:var(--primary)">FIAT</span></a>
+          <a href="#planes" class="nav-link">Planes <span style="font-weight:600; color:var(--primary)">FIAT</span></a>
           <a href="#contacto" class="btn btn-outline">Contacto</a>
         </nav>
       </div>
@@ -75,6 +75,29 @@ const { title = "Portuauto | Planes FIAT" } = Astro.props;
     </script>
     <script>
       document.addEventListener('DOMContentLoaded', ()=>{
+        const planesLink = document.querySelector('.nav-link[href="#planes"]');
+        if(planesLink){
+          planesLink.addEventListener('click', (e)=>{
+            const planesSection = document.getElementById('planes');
+            if(!planesSection){
+              e.preventDefault();
+              const contactSection = document.getElementById('contacto');
+              const form = document.querySelector('.contact-form');
+              const consultaArea = form?.querySelector('textarea[name="consulta"]');
+              if(contactSection && form){
+                if(consultaArea) {
+                  consultaArea.value = "Hola, quisiera consultar sobre los planes disponibles.";
+                }
+                contactSection.scrollIntoView({behavior:'smooth', block:'start'});
+                const wrap = form.closest('.container');
+                wrap?.classList.add('contact-pulse');
+                setTimeout(()=>{ wrap?.classList.remove('contact-pulse'); }, 1600);
+              } else {
+                window.location.href = '/#planes';
+              }
+            }
+          });
+        }
         document.querySelectorAll('a[href="#contacto"]:not([data-model])')?.forEach(link=>{
           link.addEventListener('click', ()=>{
             const form = document.querySelector('.contact-form');
@@ -100,5 +123,27 @@ const { title = "Portuauto | Planes FIAT" } = Astro.props;
       });
     </script>
   </body>
-  
 </html>
+<style>
+  .nav-link {
+    text-decoration: none;
+    position: relative;
+    color: inherit;
+    display: inline-block;
+  }
+  
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -2px;
+    left: 0;
+    background-color: var(--primary);
+    transition: width 0.3s ease;
+  }
+  
+  .nav-link:hover::after {
+    width: 100%;
+  }
+</style>

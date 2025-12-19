@@ -1,6 +1,11 @@
 ---
 import { planes } from "../data/planes";
-const { defaultModel = "" } = Astro.props;
+const { defaultModel = "", availablePercents = undefined } = Astro.props;
+const unionPercents = (() => {
+  if (Array.isArray(availablePercents)) return Array.from(new Set(availablePercents)).sort((a,b)=>a-b);
+  const all = planes.flatMap(p => (p.planPercentsVisible ?? p.planPercents ?? []));
+  return Array.from(new Set(all)).sort((a,b)=>a-b);
+})();
 ---
 <section id="contacto" class="section">
   <div class="container contact-wrap">
@@ -11,14 +16,23 @@ const { defaultModel = "" } = Astro.props;
         <div class="phone-row" style="display:flex;gap:8px;align-items:center">
           <input name="numero" type="tel" placeholder="Número de teléfono" minlength="10" maxlength="11" required inputmode="numeric" style="padding:12px;border:1px solid var(--border);border-radius:8px;flex:1" />
         </div>
+        <div>
+          <label for="anticipo" style="display:block;margin-bottom:6px;font-weight:600;font-size:13px">Anticipo (Opcional)</label>
+          <input id="anticipo" name="anticipo" type="text" placeholder="Auto usado, valor monetario, etc" style="padding:12px;border:1px solid var(--border);border-radius:8px;width:100%" />
+        </div>
+        <div>
+          <label for="valorCuota" style="display:block;margin-bottom:6px;font-weight:600;font-size:13px">Valor cuota (Opcional)</label>
+          <input id="valorCuota" name="valorCuota" type="text" placeholder="Valor de cuota dispuesto a invertir" style="padding:12px;border:1px solid var(--border);border-radius:8px;width:100%" />
+        </div>
         <select name="modelo" style="padding:12px;border:1px solid var(--border);border-radius:8px">
           <option value="">Modelo</option>
           {Array.from(new Set(planes.map(p=>p.modelo))).map(m=> <option selected={defaultModel===m}>{m}</option>)}
         </select>
         <select name="planTipo" style="padding:12px;border:1px solid var(--border);border-radius:8px">
           <option value="">Tipo de Plan (Opcional)</option>
-          <option value="Plan 70% financiado">Plan 70% financiado</option>
-          <option value="Plan 90% financiado">Plan 90% financiado</option>
+          {unionPercents.map(pct => (
+            <option value={`Plan ${pct}% financiado`}>Plan {pct}% financiado</option>
+          ))}
         </select>
         <select name="provincia" style="padding:12px;border:1px solid var(--border);border-radius:8px">
           <option value="">Zona</option>
@@ -68,6 +82,8 @@ const { defaultModel = "" } = Astro.props;
   const submitLoader = submitBtn?.querySelector('.btn-loader');
   const nombreInput = form?.querySelector('input[name="nombre"]');
   const numeroInput = form?.querySelector('input[name="numero"]');
+  const anticipoInput = form?.querySelector('input[name="anticipo"]');
+  const valorCuotaInput = form?.querySelector('input[name="valorCuota"]');
   const modelSelect = form?.querySelector('select[name="modelo"]');
   const planTipoSelect = form?.querySelector('select[name="planTipo"]');
   const provinciaSelect = form?.querySelector('select[name="provincia"]');
@@ -93,20 +109,22 @@ const { defaultModel = "" } = Astro.props;
     const nombre = (data.get('nombre')||'').toString().trim();
     const numero = (data.get('numero')||'').toString().trim();
     const consulta = (data.get('consulta')||'').toString().trim();
+    const anticipo = (data.get('anticipo')||'').toString().trim();
+    const valorCuota = (data.get('valorCuota')||'').toString().trim();
     const modelo = (data.get('modelo')||'').toString().trim();
     const planTipo = (data.get('planTipo')||'').toString().trim();
     const provincia = (data.get('provincia')||'').toString().trim();
     if(!nombre){ if(err) err.textContent = 'Completá tu nombre y apellido.'; return; }
     const numDigits = numero.replace(/\D/g,'').length;
     if(!numero || numDigits < 9){ if(err) err.textContent = 'Ingresá tu número de teléfono (mínimo 9 dígitos).'; return; }
-    const mensaje = `Hola! Quiero info de FIAT por plan\nNombre y Apellido: ${nombre}${numero?`\nNúmero: ${numero}`:''}${modelo?`\nModelo: ${modelo}`:''}${planTipo?`\nTipo de Plan: ${planTipo}`:''}${provincia?`\nLugar: ${provincia}`:''}\nConsulta: ${consulta}`;
+    const mensaje = `Hola! Quiero info de FIAT por plan\nNombre y Apellido: ${nombre}${numero?`\nNúmero: ${numero}`:''}${modelo?`\nModelo: ${modelo}`:''}${planTipo?`\nTipo de Plan: ${planTipo}`:''}${provincia?`\nLugar: ${provincia}`:''}${anticipo?`\nAnticipo: ${anticipo}`:''}${valorCuota?`\nValor cuota: ${valorCuota}`:''}\nConsulta: ${consulta}`;
     if(err) err.textContent = '';
     if(success){ success.style.display = 'none'; success.textContent = ''; }
     if(submitBtn){ submitBtn.disabled = true; submitBtn.setAttribute('aria-busy','true'); }
     if(submitLabel){ submitLabel.style.opacity = '0'; }
     if(submitLoader){ submitLoader.style.display = 'inline-block'; submitBtn?.classList.add('loading'); }
     try{
-      const res = await fetch('https://formsubmit.co/ajax/francobusch130@gmail.com', { method:'POST', headers:{ 'Content-Type':'application/json', 'Accept':'application/json' }, body: JSON.stringify({ nombre, numero, modelo, planTipo, provincia, consulta }) });
+      const res = await fetch('https://formsubmit.co/ajax/francobusch130@gmail.com', { method:'POST', headers:{ 'Content-Type':'application/json', 'Accept':'application/json' }, body: JSON.stringify({ nombre, numero, modelo, planTipo, provincia, consulta, anticipo, valorCuota }) });
       if(res && res.ok){
         if(success){ success.textContent = '¡Consulta enviada! Nos pondremos en contacto a la brevedad.'; success.style.display = 'block'; }
         try{ if(typeof window.gtag_report_conversion === 'function'){ window.gtag_report_conversion(); } }catch(_){ }
@@ -115,6 +133,8 @@ const { defaultModel = "" } = Astro.props;
         if(submitLoader){ submitLoader.style.display = 'none'; submitBtn?.classList.remove('loading'); }
         if(nombreInput){ nombreInput.value = ''; }
         if(numeroInput){ numeroInput.value = ''; }
+        if(anticipoInput){ anticipoInput.value = ''; }
+        if(valorCuotaInput){ valorCuotaInput.value = ''; }
         if(modelSelect){ modelSelect.value = ''; }
         if(planTipoSelect){ planTipoSelect.value = ''; }
         if(provinciaSelect){ provinciaSelect.value = ''; }
