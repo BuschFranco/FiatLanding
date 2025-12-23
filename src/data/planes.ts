@@ -21,6 +21,30 @@ export const planes = [
       80: "$6.899.999",
       90: "$6.899.999"
     },
+    detalleCuotasPorPlan: {
+      70: [
+        { label: "Alicuota", value: "$303.575" },
+        { label: "Cuota 1", value: "$1.100.500" },
+        { label: "Cuota 2 a 13", value: "$483.267" },
+        { label: "Cuota 14 a 18", value: "$367.265" },
+        { label: "Cuota 19 a 42", value: "$388.749" },
+        { label: "Cuota 43 a 84", value: "$367.265" }
+      ],
+      80: [
+        { label: "Alicuota", value: "Consultar" },
+        { label: "Cuota 1", value: "Consultar" },
+        { label: "Cuota 2 a 13", value: "Consultar" },
+        { label: "Cuota 14 a 18", value: "Consultar" },
+        { label: "Cuota 19 a 42", value: "Consultar" },
+        { label: "Cuota 43 a 84", value: "Consultar" }
+      ],
+      90: [
+        { label: "Alicuota", value: "$390.311" },
+        { label: "Cuota 1", value: "$1.100.500" },
+        { label: "Cuota 2 a 13", value: "$614.528" },
+        { label: "Cuota 14 a 84", value: "$464.496" }
+      ]
+    },
     detalleCuotas: [
       { label: "Alicuota", value: "$303.575" },
       { label: "Cuota 1", value: "$1.100.500" },
@@ -121,4 +145,22 @@ for (const p of planes as any[]) {
   const map = p.cuotaDesdePorPlan || {};
   const visible = percents.filter((pct)=> parseARS(map?.[pct]) > 0);
   if (visible.length > 0) p.planPercentsVisible = visible;
+  const detalleDefault = Array.isArray(p.detalleCuotas) ? p.detalleCuotas : [];
+  p.detalleCuotasPorPlan = p.detalleCuotasPorPlan || {};
+  const targetPercents: number[] = Array.isArray(p.planPercentsVisible) && p.planPercentsVisible.length ? p.planPercentsVisible : percents;
+  for (const pct of targetPercents) {
+    if (!Array.isArray(p.detalleCuotasPorPlan[pct]) || p.detalleCuotasPorPlan[pct].length === 0) {
+      p.detalleCuotasPorPlan[pct] = detalleDefault;
+    }
+  }
+}
+
+export function getDetalleCuotasForPlan(plane: any, percent: number){
+  try {
+    const map = plane?.detalleCuotasPorPlan;
+    if (map && map[percent]) return map[percent];
+    return plane?.detalleCuotas ?? [];
+  } catch {
+    return Array.isArray(plane?.detalleCuotas) ? plane.detalleCuotas : [];
+  }
 }

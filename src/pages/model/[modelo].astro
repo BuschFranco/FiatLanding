@@ -46,12 +46,21 @@ const { data } = Astro.props;
             </div>
           </div>
           
-          <script define:vars={{ PRICE: data.precioVehiculo ?? 30000000, PRICE_CFG: { cuotas: data.cuotas ?? 84, adminFactor: data.adminFactor ?? 1.2, percents: (data.planPercentsVisible ?? data.planPercents ?? [70,90]) }, CUOTA_DESDE_MAP: data.cuotaDesdePorPlan ?? {}, ANTICIPO_MAP: data.anticipoPorPlan ?? {} }}>
+          <script define:vars={{ PRICE: data.precioVehiculo ?? 30000000, PRICE_CFG: { cuotas: data.cuotas ?? 84, adminFactor: data.adminFactor ?? 1.2, percents: (data.planPercentsVisible ?? data.planPercents ?? [70,90]) }, CUOTA_DESDE_MAP: data.cuotaDesdePorPlan ?? {}, ANTICIPO_MAP: data.anticipoPorPlan ?? {}, DETALLE_MAP: data.detalleCuotasPorPlan ?? {}, DETALLE_DEFAULT: data.detalleCuotas ?? [] }}>
             const CUOTAS = PRICE_CFG?.cuotas ?? 84;
             const ADMIN_FACTOR = PRICE_CFG?.adminFactor ?? 1.2;
             const fmt = (n)=> new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',maximumFractionDigits:0}).format(n);
             const parseARS = (str)=>{ try{ return parseInt(String(str).replace(/[^0-9]/g,'')||'0',10) }catch(_){ return 0 } };
             window.planSelectedByUser = false;
+            function chooseInitialPercent(){
+              try {
+                const percents = Array.isArray(PRICE_CFG?.percents) ? PRICE_CFG.percents : [];
+                const candidates = percents.map((pct)=>({ pct, val: parseARS(CUOTA_DESDE_MAP?.[pct]) })).filter(x=> x.val > 0);
+                if (candidates.length === 0) return percents.length ? percents[0] : 70;
+                candidates.sort((a,b)=> a.val - b.val);
+                return candidates[0].pct;
+              } catch(_) { return 70; }
+            }
             function update(percent){
               const financed = PRICE * (percent/100);
               const override = CUOTA_DESDE_MAP && CUOTA_DESDE_MAP[percent] ? CUOTA_DESDE_MAP[percent] : "";
@@ -70,8 +79,33 @@ const { data } = Astro.props;
               document.getElementById('anticipo').textContent = anticipoOverride && anticipoOverride.length ? anticipoOverride : 'Consultar';
               document.getElementById('precio-vehiculo').textContent = fmt(PRICE);
             }
-            const initial = Array.isArray(PRICE_CFG?.percents) && PRICE_CFG.percents.length ? (PRICE_CFG.percents[0]) : 70;
+            function renderDetalle(percent){
+              try {
+                const fallback = [
+                  { label: "Cuota 1", value: "Consultar" },
+                  { label: "Cuotas 2 a 13", value: "Consultar" },
+                  { label: "Cuotas 14 a 18", value: "Consultar" },
+                  { label: "Cuotas 19 a 42", value: "Consultar" },
+                  { label: "Cuotas 43 a 84", value: "Consultar" },
+                  { label: "Alicuota extraordinaria", value: "Consultar" }
+                ];
+                const computed = (DETALLE_MAP && DETALLE_MAP[percent]) ? DETALLE_MAP[percent] : DETALLE_DEFAULT;
+                const list = Array.isArray(computed) && computed.length ? computed : fallback;
+                const host = document.getElementById('detalle-cuotas');
+                if (host) {
+                  host.innerHTML = Array.isArray(list) ? list.map(i=>`<div class="detail">${i.label}: ${i.value}</div>`).join('') : '';
+                }
+              } catch(_){}
+            }
+            const initial = chooseInitialPercent();
             update(initial);
+            renderDetalle(initial);
+            (function(){
+              const tabs = document.querySelectorAll('.tab');
+              tabs.forEach(b=> b.classList.remove('active'));
+              const match = Array.from(tabs).find(b=> parseInt(b.dataset.percent,10) === initial);
+              match?.classList.add('active');
+            })();
             document.querySelectorAll('.tab').forEach(t=>{
               t.addEventListener('click',()=>{
                 const prices = document.getElementById('prices');
@@ -81,6 +115,7 @@ const { data } = Astro.props;
                 const percent = parseInt(t.dataset.percent,10);
                 setTimeout(()=>{
                   update(percent);
+                  renderDetalle(percent);
                   prices?.classList.remove('switching');
                   const planSelect = document.querySelector('.contact-form select[name="planTipo"]');
                   const planStr = `Plan ${percent}% financiado`;
@@ -146,16 +181,18 @@ const { data } = Astro.props;
             </div>
             <div class="card">
               <div class="model">Detalle de cuotas</div>
-              {((data.detalleCuotas) ?? [
-                { label: "Cuota 1", value: "Consultar" },
-                { label: "Cuotas 2 a 13", value: "Consultar" },
-                { label: "Cuotas 14 a 18", value: "Consultar" },
-                { label: "Cuotas 19 a 42", value: "Consultar" },
-                { label: "Cuotas 43 a 84", value: "Consultar" },
-                { label: "Alicuota extraordinaria", value: "Consultar" }
-              ]).map(item => (
-                <div class="detail">{item.label}: {item.value}</div>
-              ))}
+              <div id="detalle-cuotas">
+                {((data.detalleCuotas) ?? [
+                  { label: "Cuota 1", value: "Consultar" },
+                  { label: "Cuotas 2 a 13", value: "Consultar" },
+                  { label: "Cuotas 14 a 18", value: "Consultar" },
+                  { label: "Cuotas 19 a 42", value: "Consultar" },
+                  { label: "Cuotas 43 a 84", value: "Consultar" },
+                  { label: "Alicuota extraordinaria", value: "Consultar" }
+                ]).map(item => (
+                  <div class="detail">{item.label}: {item.value}</div>
+                ))}
+              </div>
             </div>
           </div>
           <div class="card" style="margin-bottom:16px">
