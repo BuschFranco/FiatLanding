@@ -195,10 +195,27 @@ const { data } = Astro.props;
               </div>
             </div>
           </div>
-          <div class="card" style="margin-bottom:16px">
-            <div class="model">Medios de pago</div>
-            <div class="detail">Transferencia bancaria, débito automático, tarjetas (Visa, MasterCard, Amex), Rapipago, PagoMisCuentas.</div>
-          </div>
+            <div class="card" style="margin-bottom:16px">
+              <div class="model">Medios de pago</div>
+              <div class="detail">Transferencia bancaria, débito automático, tarjetas (Visa, MasterCard, Amex), Rapipago, PagoMisCuentas.</div>
+            </div>
+            <div class="card" style="margin-bottom:16px">
+              <div class="model">Detalles de contacto</div>
+              <strong class="detail">Celular: +54 9 11 3620-4932</strong>
+              <strong class="detail">Email: doliveros24@hotmail.com</strong>
+              <strong class="detail">Dirección: Av Rivadavia 2001, Esquina Ayacucho, Congreso, CABA</strong>
+              <div style="border-radius:12px;overflow:hidden">
+                <iframe
+                  src="https://www.google.com/maps?q=Av+Rivadavia+2001,+Esquina+Ayacucho,+Congreso,+CABA&output=embed"
+                  width="100%"
+                  height="300"
+                  style="border:0"
+                  loading="lazy"
+                  referrerpolicy="no-referrer-when-downgrade"
+                  allowfullscreen>
+                </iframe>
+              </div>
+            </div>
           <div class="cta" style="display:flex;gap:12px">
             <a class="btn" style="background:var(--primary);color:#fff;width:100%" href="#contacto" data-model={data.modelo}>Solicitar asesor FIAT</a>
             <a class="btn btn-outline" href="/">Volver</a>
