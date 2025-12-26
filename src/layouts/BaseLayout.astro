@@ -99,13 +99,18 @@ const { title = "Portuauto | Planes FIAT" } = Astro.props;
           });
         }
         document.querySelectorAll('a[href="#contacto"]:not([data-model])')?.forEach(link=>{
-          link.addEventListener('click', ()=>{
-            const form = document.querySelector('.contact-form');
-            const wrap = form?.closest('.container');
-            const contactSection = document.getElementById('contacto');
-            contactSection?.scrollIntoView({behavior:'smooth', block:'start'});
-            wrap?.classList.add('contact-pulse');
-            setTimeout(()=>{ wrap?.classList.remove('contact-pulse'); }, 1600);
+          link.addEventListener('click', (e)=>{
+            e.preventDefault();
+            const modal = document.getElementById('contact-modal');
+            const form = modal?.querySelector('.contact-form');
+            const openModal = ()=>{
+              if(!modal) return;
+              modal.style.display = 'flex';
+              document.body.style.overflow = 'hidden';
+              const nombreInput = form?.querySelector('input[name="nombre"]');
+              nombreInput?.focus();
+            };
+            openModal();
           });
         });
         const promo = document.getElementById('promo-popup');

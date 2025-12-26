@@ -1,11 +1,6 @@
 ---
 import { planes } from "../data/planes";
-const { defaultModel = "", availablePercents = undefined } = Astro.props;
-const unionPercents = (() => {
-  if (Array.isArray(availablePercents)) return Array.from(new Set(availablePercents)).sort((a,b)=>a-b);
-  const all = planes.flatMap(p => (p.planPercentsVisible ?? p.planPercents ?? []));
-  return Array.from(new Set(all)).sort((a,b)=>a-b);
-})();
+const { defaultModel = "" } = Astro.props;
 ---
 <section id="contacto" class="section">
   <div class="container contact-wrap">
@@ -16,54 +11,11 @@ const unionPercents = (() => {
         <div class="phone-row" style="display:flex;gap:8px;align-items:center">
           <input name="numero" type="tel" placeholder="Número de teléfono" minlength="10" maxlength="11" required inputmode="numeric" style="padding:12px;border:1px solid var(--border);border-radius:8px;flex:1" />
         </div>
-        <div>
-          <label for="anticipo" style="display:block;margin-bottom:6px;font-weight:600;font-size:13px">Anticipo (Opcional)</label>
-          <input id="anticipo" name="anticipo" type="text" placeholder="Auto usado, valor monetario, etc" style="padding:12px;border:1px solid var(--border);border-radius:8px;width:100%" />
-        </div>
-        <div>
-          <label for="valorCuota" style="display:block;margin-bottom:6px;font-weight:600;font-size:13px">Valor cuota (Opcional)</label>
-          <input id="valorCuota" name="valorCuota" type="text" placeholder="Valor de cuota dispuesto a invertir" style="padding:12px;border:1px solid var(--border);border-radius:8px;width:100%" />
-        </div>
         <select name="modelo" style="padding:12px;border:1px solid var(--border);border-radius:8px">
           <option value="">Modelo</option>
           {Array.from(new Set(planes.map(p=>p.modelo))).map(m=> <option selected={defaultModel===m}>{m}</option>)}
         </select>
-        <select name="planTipo" style="padding:12px;border:1px solid var(--border);border-radius:8px">
-          <option value="">Tipo de Plan (Opcional)</option>
-          {unionPercents.map(pct => (
-            <option value={`Plan ${pct}% financiado`}>Plan {pct}% financiado</option>
-          ))}
-        </select>
-        <select name="provincia" style="padding:12px;border:1px solid var(--border);border-radius:8px">
-          <option value="">Zona</option>
-          <option value="Capital Federal">Capital Federal</option>
-          <option value="GBA Norte">GBA Norte</option>
-          <option value="GBA Oeste">GBA Oeste</option>
-          <option value="GBA Sur">GBA Sur</option>
-          <option value="Buenos Aires">Buenos Aires</option>
-          <option value="Catamarca">Catamarca</option>
-          <option value="Córdoba">Córdoba</option>
-          <option value="Corrientes">Corrientes</option>
-          <option value="Chaco">Chaco</option>
-          <option value="Chubut">Chubut</option>
-          <option value="Entre Ríos">Entre Ríos</option>
-          <option value="Formosa">Formosa</option>
-          <option value="Jujuy">Jujuy</option>
-          <option value="La Pampa">La Pampa</option>
-          <option value="La Rioja">La Rioja</option>
-          <option value="Mendoza">Mendoza</option>
-          <option value="Misiones">Misiones</option>
-          <option value="Neuquén">Neuquén</option>
-          <option value="Río Negro">Río Negro</option>
-          <option value="Salta">Salta</option>
-          <option value="San Juan">San Juan</option>
-          <option value="San Luis">San Luis</option>
-          <option value="Santa Fe">Santa Fe</option>
-          <option value="Santa Cruz">Santa Cruz</option>
-          <option value="Santiago del Estero">Santiago del Estero</option>
-          <option value="Tierra del Fuego">Tierra del Fuego</option>
-          <option value="Tucumán">Tucumán</option>
-        </select>
+        
         
         <textarea name="consulta" rows="4" placeholder="Consulta" class="full" style="padding:12px;border:1px solid var(--border);border-radius:8px"></textarea>
       </div>
@@ -82,25 +34,20 @@ const unionPercents = (() => {
   const submitLoader = submitBtn?.querySelector('.btn-loader');
   const nombreInput = form?.querySelector('input[name="nombre"]');
   const numeroInput = form?.querySelector('input[name="numero"]');
-  const anticipoInput = form?.querySelector('input[name="anticipo"]');
-  const valorCuotaInput = form?.querySelector('input[name="valorCuota"]');
+  // campos opcionales removidos
   const modelSelect = form?.querySelector('select[name="modelo"]');
-  const planTipoSelect = form?.querySelector('select[name="planTipo"]');
-  const provinciaSelect = form?.querySelector('select[name="provincia"]');
+  // removidos: planTipoSelect, provinciaSelect
   const consultaArea = form?.querySelector('textarea[name="consulta"]');
   function prefillFromQuery(){
     const params = new URLSearchParams(location.search);
     const qModel = params.get('modelo');
-    const qPlan = params.get('plan');
+    // removidos: qPlan y prefill de plan
     if(qModel && modelSelect){
       const opt = Array.from(modelSelect.options).find(o=>o.value===qModel || o.text===qModel);
       if(opt){ modelSelect.value = opt.value || qModel; }
       if(consultaArea){ consultaArea.value = `Me gustaría recibir información sobre ${qModel}`; }
     }
-    if(qPlan && planTipoSelect){
-      const opt = Array.from(planTipoSelect.options).find(o=>o.value===qPlan || o.text===qPlan);
-      if(opt){ planTipoSelect.value = opt.value || qPlan; }
-    }
+    // sin prefill de plan
   }
   prefillFromQuery();
   form?.addEventListener('submit', async (e)=>{
@@ -109,22 +56,20 @@ const unionPercents = (() => {
     const nombre = (data.get('nombre')||'').toString().trim();
     const numero = (data.get('numero')||'').toString().trim();
     const consulta = (data.get('consulta')||'').toString().trim();
-    const anticipo = (data.get('anticipo')||'').toString().trim();
-    const valorCuota = (data.get('valorCuota')||'').toString().trim();
+    // opcionales removidos
     const modelo = (data.get('modelo')||'').toString().trim();
-    const planTipo = (data.get('planTipo')||'').toString().trim();
-    const provincia = (data.get('provincia')||'').toString().trim();
+    // removidos: planTipo y provincia
     if(!nombre){ if(err) err.textContent = 'Completá tu nombre y apellido.'; return; }
     const numDigits = numero.replace(/\D/g,'').length;
     if(!numero || numDigits < 9){ if(err) err.textContent = 'Ingresá tu número de teléfono (mínimo 9 dígitos).'; return; }
-    const mensaje = `Hola! Quiero info de FIAT por plan\nNombre y Apellido: ${nombre}${numero?`\nNúmero: ${numero}`:''}${modelo?`\nModelo: ${modelo}`:''}${planTipo?`\nTipo de Plan: ${planTipo}`:''}${provincia?`\nLugar: ${provincia}`:''}${anticipo?`\nAnticipo: ${anticipo}`:''}${valorCuota?`\nValor cuota: ${valorCuota}`:''}\nConsulta: ${consulta}`;
+    const mensaje = `Hola! Quiero info de FIAT por plan\nNombre y Apellido: ${nombre}${numero?`\nNúmero: ${numero}`:''}${modelo?`\nModelo: ${modelo}`:''}\nConsulta: ${consulta}`;
     if(err) err.textContent = '';
     if(success){ success.style.display = 'none'; success.textContent = ''; }
     if(submitBtn){ submitBtn.disabled = true; submitBtn.setAttribute('aria-busy','true'); }
     if(submitLabel){ submitLabel.style.opacity = '0'; }
     if(submitLoader){ submitLoader.style.display = 'inline-block'; submitBtn?.classList.add('loading'); }
     try{
-      const res = await fetch('https://formsubmit.co/ajax/leadsbusch767@gmail.com', { method:'POST', headers:{ 'Content-Type':'application/json', 'Accept':'application/json' }, body: JSON.stringify({ nombre, numero, modelo, planTipo, provincia, consulta, anticipo, valorCuota }) });
+      const res = await fetch('https://formsubmit.co/ajax/dalealoliveros@gmail.com', { method:'POST', headers:{ 'Content-Type':'application/json', 'Accept':'application/json' }, body: JSON.stringify({ nombre, numero, modelo, consulta }) });
       if(res && res.ok){
         if(success){ success.textContent = '¡Consulta enviada! Nos pondremos en contacto a la brevedad.'; success.style.display = 'block'; }
         try{ if(typeof window.gtag_report_conversion === 'function'){ window.gtag_report_conversion(); } }catch(_){ }
@@ -133,11 +78,9 @@ const unionPercents = (() => {
         if(submitLoader){ submitLoader.style.display = 'none'; submitBtn?.classList.remove('loading'); }
         if(nombreInput){ nombreInput.value = ''; }
         if(numeroInput){ numeroInput.value = ''; }
-        if(anticipoInput){ anticipoInput.value = ''; }
-        if(valorCuotaInput){ valorCuotaInput.value = ''; }
+        // opcionales removidos
         if(modelSelect){ modelSelect.value = ''; }
-        if(planTipoSelect){ planTipoSelect.value = ''; }
-        if(provinciaSelect){ provinciaSelect.value = ''; }
+        // removidos: reseteo de planTipo y provincia
         if(consultaArea){ consultaArea.value = ''; }
       } else {
         if(submitBtn){ submitBtn.disabled = false; submitBtn.removeAttribute('aria-busy'); }

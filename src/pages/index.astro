@@ -53,17 +53,38 @@ const lowestCuotaDesde = (p)=>{
       </div>
     </div>
   </section>
-  <ContactForm />
+  <div id="contact-modal" role="dialog" aria-modal="true" style="position:fixed;inset:0;display:none;z-index:1200;display:none;align-items:center;justify-content:center;padding:16px">
+    <div class="modal-backdrop" style="position:absolute;inset:0;background:rgba(0,0,0,0.45)"></div>
+    <div class="modal-content" style="position:relative;width:100%;max-width:720px;max-height:calc(100vh - 32px);background:#fff;border-radius:12px;box-shadow:0 18px 40px rgba(0,0,0,0.35);padding:16px;z-index:1;overflow:auto;-webkit-overflow-scrolling:touch">
+      <button class="modal-close" aria-label="Cerrar" title="Cerrar" style="position:absolute;top:8px;right:8px;background:#eee;color:#333;border:none;border-radius:999px;width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;line-height:1">×</button>
+      <ContactForm />
+    </div>
+  </div>
   <script define:vars={{ WHATSAPP_PHONE }}>
-    const form = document.querySelector('.contact-form');
+    const modal = document.getElementById('contact-modal');
+    const form = modal?.querySelector('.contact-form');
     const err = document.querySelector('.form-error');
     const fallback = document.querySelector('.whatsapp-fallback');
-    const contactSection = document.getElementById('contacto');
     const modelSelect = form?.querySelector('select[name="modelo"]');
     const consultaArea = form?.querySelector('textarea[name="consulta"]');
     function isEmail(v){ return /.+@.+\..+/.test(v); }
     function digits(v){ return (v||'').replace(/\D+/g,''); }
     // envío manejado dentro del componente ContactForm
+    function openContactModal(){
+      if(!modal) return;
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      const nombreInput = form?.querySelector('input[name="nombre"]');
+      nombreInput?.focus();
+    }
+    function closeContactModal(){
+      if(!modal) return;
+      modal.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+    modal?.querySelector('.modal-close')?.addEventListener('click', (e)=>{ e.preventDefault(); closeContactModal(); });
+    modal?.querySelector('.modal-backdrop')?.addEventListener('click', (e)=>{ e.preventDefault(); closeContactModal(); });
+    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ closeContactModal(); } });
 
     document.querySelectorAll('.cards .actions .btn[data-model]')?.forEach(btn=>{
       btn.addEventListener('click', (e)=>{
@@ -77,10 +98,7 @@ const lowestCuotaDesde = (p)=>{
           const base = `Me gustaría recibir información sobre ${model}`;
           consultaArea.value = base;
         }
-        contactSection?.scrollIntoView({behavior:'smooth', block:'start'});
-        const wrap = form?.closest('.container');
-        wrap?.classList.add('contact-pulse');
-        setTimeout(()=>{ wrap?.classList.remove('contact-pulse'); }, 1600);
+        openContactModal();
       });
     });
     // prefill por query lo maneja ContactForm
