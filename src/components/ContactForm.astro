@@ -14,6 +14,22 @@ const { defaultModel = "" } = Astro.props;
         <select name="modelo" style="padding:12px;border:1px solid var(--border);border-radius:8px">
           <option value="">Modelo</option>
           {Array.from(new Set(planes.map(p=>p.modelo))).map(m=> <option selected={defaultModel===m}>{m}</option>)}
+          <option value="Argo">Argo</option>
+          <option value="Pulse">Pulse</option>
+          <option value="Strada">Strada</option>
+          <option value="Fiorino">Fiorino</option>
+          <option value="Doblò">Doblò</option>
+          <option value="500">500</option>
+          <option value="500e">500e</option>
+          <option value="500X">500X</option>
+          <option value="Siena">Siena</option>
+          <option value="Palio">Palio</option>
+          <option value="Idea">Idea</option>
+          <option value="Punto">Punto</option>
+          <option value="Linea">Linea</option>
+          <option value="Bravo">Bravo</option>
+          <option value="Uno">Uno</option>
+          <option value="Toro">Toro</option>
         </select>
         
         
