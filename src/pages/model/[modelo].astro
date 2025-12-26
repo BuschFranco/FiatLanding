@@ -39,9 +39,10 @@ const { data } = Astro.props;
                 <div class="detail">Precio vehículo</div>
                 <div class="price" id="precio-vehiculo">$0</div>
                 <div class="detail" style="margin-top:8px">Consulta sin compromiso. Un asesor oficial se comunicará con vos.</div>
+                <div class="promo-banner" style="background:linear-gradient(90deg,#ff4d4d 0%,#ff8c00 100%);color:#fff;font-weight:700;font-size:14px;padding:8px 12px;border-radius:6px;margin-bottom:12px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,.15)">¡Promoción por tiempo limitado!</div>
               </div>
               <div class="cta" style="margin-top:12px">
-                <a class="btn" style="background:var(--primary);color:#fff;width:100%" href="#contacto" data-model={data.modelo}>Solicitar asesor FIAT</a>
+                <a class="btn pulse-soft" style="background:linear-gradient(135deg,var(--primary) 0%,#ff4d4d 100%);color:#fff;width:100%;font-weight:700;font-size:18px;padding:14px 0;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,.25)" href="#contacto" data-model={data.modelo}>¡Quiero mi FIAT {data.modelo} ya!</a>
               </div>
             </div>
           </div>
@@ -218,7 +219,7 @@ const { data } = Astro.props;
               </div>
             </div>
           <div class="cta" style="display:flex;gap:12px">
-            <a class="btn" style="background:var(--primary);color:#fff;width:100%" href="#contacto" data-model={data.modelo}>Solicitar asesor FIAT</a>
+             <a class="btn pulse-soft" style="background:linear-gradient(135deg,var(--primary) 0%,#ff4d4d 100%);color:#fff;width:100%;font-weight:700;font-size:18px;padding:14px 0;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,.25)" href="#contacto" data-model={data.modelo}>¡Solicitar mi {data.modelo} ya!</a>
             <a class="btn btn-outline" href="/">Volver</a>
           </div>
         </>
