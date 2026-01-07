@@ -88,16 +88,17 @@ const { defaultModel = "" } = Astro.props;
       const res = await fetch('https://formsubmit.co/ajax/dalealoliveros@gmail.com', { method:'POST', headers:{ 'Content-Type':'application/json', 'Accept':'application/json' }, body: JSON.stringify({ nombre, numero, modelo, consulta }) });
       if(res && res.ok){
         if(success){ success.textContent = '¡Consulta enviada! Nos pondremos en contacto a la brevedad.'; success.style.display = 'block'; }
-        try{ if(typeof window.gtag_report_conversion === 'function'){ window.gtag_report_conversion(); } }catch(_){ }
-        if(submitBtn){ submitBtn.disabled = false; submitBtn.removeAttribute('aria-busy'); }
-        if(submitLabel){ submitLabel.style.opacity = '1'; }
-        if(submitLoader){ submitLoader.style.display = 'none'; submitBtn?.classList.remove('loading'); }
         if(nombreInput){ nombreInput.value = ''; }
         if(numeroInput){ numeroInput.value = ''; }
         // opcionales removidos
         if(modelSelect){ modelSelect.value = ''; }
         // removidos: reseteo de planTipo y provincia
         if(consultaArea){ consultaArea.value = ''; }
+        if(typeof window !== 'undefined' && typeof window.gtag_report_conversion === 'function'){
+          window.gtag_report_conversion('/gracias');
+        } else {
+          window.location.href = '/gracias';
+        }
       } else {
         if(submitBtn){ submitBtn.disabled = false; submitBtn.removeAttribute('aria-busy'); }
         if(submitLabel){ submitLabel.style.opacity = '1'; }

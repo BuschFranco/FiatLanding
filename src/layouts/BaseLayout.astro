@@ -1,6 +1,6 @@
 ---
 import "../styles/global.css";
-const { title = "Portuauto | Planes FIAT" } = Astro.props;
+const { title = "Portuauto | Planes FIAT", noindex = false } = Astro.props;
 ---
 <html lang="es">
   <head>
@@ -21,6 +21,7 @@ const { title = "Portuauto | Planes FIAT" } = Astro.props;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
+    {noindex && <meta name="robots" content="noindex,nofollow" />}
     <link rel="icon" type="image/webp" href="/images/icon.webp" />
     <meta name="description" content="Descubre los mejores planes FIAT financiados por Portuauto. Ofrecemos financiamiento asequible y transparente para tu auto. ¡Contacta hoy mismo!" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
