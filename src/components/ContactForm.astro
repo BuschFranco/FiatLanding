@@ -85,7 +85,7 @@ const { defaultModel = "" } = Astro.props;
     if(submitLabel){ submitLabel.style.opacity = '0'; }
     if(submitLoader){ submitLoader.style.display = 'inline-block'; submitBtn?.classList.add('loading'); }
     try{
-      const res = await fetch('https://formsubmit.co/ajax/yochicos@gmail.com', { method:'POST', headers:{ 'Content-Type':'application/json', 'Accept':'application/json' }, body: JSON.stringify({ nombre, numero, modelo, consulta }) });
+      const res = await fetch('https://formsubmit.co/ajax/dalealoliveros@gmail.com', { method:'POST', headers:{ 'Content-Type':'application/json', 'Accept':'application/json' }, body: JSON.stringify({ nombre, numero, modelo, consulta }) });
       if(res && res.ok){
         if(success){ success.textContent = '¡Consulta enviada! Nos pondremos en contacto a la brevedad.'; success.style.display = 'block'; }
         if(nombreInput){ nombreInput.value = ''; }
