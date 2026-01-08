@@ -1,6 +1,7 @@
 ---
 import { planes } from "../data/planes";
 const { defaultModel = "" } = Astro.props;
+const clientEmail = import.meta.env.PUBLIC_CLIENT_EMAIL;
 ---
 <section id="contacto" class="section">
   <div class="container contact-wrap">
@@ -78,27 +79,16 @@ const { defaultModel = "" } = Astro.props;
     if(!nombre){ if(err) err.textContent = 'Completá tu nombre y apellido.'; return; }
     const numDigits = numero.replace(/\D/g,'').length;
     if(!numero || numDigits < 9){ if(err) err.textContent = 'Ingresá tu número de teléfono (mínimo 9 dígitos).'; return; }
-    const mensaje = `Hola! Quiero info de FIAT por plan\nNombre y Apellido: ${nombre}${numero?`\nNúmero: ${numero}`:''}${modelo?`\nModelo: ${modelo}`:''}\nConsulta: ${consulta}`;
     if(err) err.textContent = '';
     if(success){ success.style.display = 'none'; success.textContent = ''; }
     if(submitBtn){ submitBtn.disabled = true; submitBtn.setAttribute('aria-busy','true'); }
     if(submitLabel){ submitLabel.style.opacity = '0'; }
     if(submitLoader){ submitLoader.style.display = 'inline-block'; submitBtn?.classList.add('loading'); }
     try{
-      const res = await fetch('https://formsubmit.co/ajax/yochicos@gmail.com', { method:'POST', headers:{ 'Content-Type':'application/json', 'Accept':'application/json' }, body: JSON.stringify({ nombre, numero, modelo, consulta }) });
+      const res = await fetch('https://formsubmit.co/ajax/dalealoliveros@gmail.com', { method:'POST', headers:{ 'Content-Type':'application/json', 'Accept':'application/json' }, body: JSON.stringify({ nombre, numero, modelo, consulta }) });
       if(res && res.ok){
         if(success){ success.textContent = '¡Consulta enviada! Nos pondremos en contacto a la brevedad.'; success.style.display = 'block'; }
-        if(nombreInput){ nombreInput.value = ''; }
-        if(numeroInput){ numeroInput.value = ''; }
-        // opcionales removidos
-        if(modelSelect){ modelSelect.value = ''; }
-        // removidos: reseteo de planTipo y provincia
-        if(consultaArea){ consultaArea.value = ''; }
-        if(typeof window !== 'undefined' && typeof window.gtag_report_conversion === 'function'){
-          window.gtag_report_conversion('/gracias');
-        } else {
-          window.location.href = '/gracias';
-        }
+        window.location.href = '/gracias';
       } else {
         if(submitBtn){ submitBtn.disabled = false; submitBtn.removeAttribute('aria-busy'); }
         if(submitLabel){ submitLabel.style.opacity = '1'; }

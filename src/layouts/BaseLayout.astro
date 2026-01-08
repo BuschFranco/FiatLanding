@@ -12,11 +12,6 @@ const { title = "Portuauto | Planes FIAT", noindex = false } = Astro.props;
       gtag('js', new Date());
 
       gtag('config', 'AW-16671908962');
-      window.gtag_report_conversion = function(url){
-        var callback = function(){ if(typeof(url)!='undefined'){ window.location = url; } };
-        gtag('event','conversion',{ send_to:'AW-16671908962/D-F_COrc_9EbE0LI5I0-', event_callback:callback });
-        return false;
-      }
     </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
